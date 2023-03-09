@@ -12,7 +12,7 @@ or use "CUDA_VISIBLE_DEVICES" like:
 CUDA_VISIBLE_DEVICES=0 python Main.py --data WN18RR   --name XXX  --lr 0.00003 --batch 256 
 ```
 
-then we will get something like this：
+then it will start to run：
 
 ![](https://github.com/fofilix/NS_KRL/blob/main/pic/runningpic.png)
 
