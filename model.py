@@ -509,17 +509,26 @@ class InteractE(torch.nn.Module):
 		super(InteractE, self).__init__()
 		self.p                  = params
 		self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-		self.ent_embed		= torch.nn.Embedding(self.p.num_ent,   self.p.embed_dim, padding_idx=None).to(self.device); xavier_normal_(self.ent_embed.weight)
+
+		self.inp_drop = torch.nn.Dropout(self.p.inp_drop)
+		self.hidden_drop = torch.nn.Dropout(self.p.hid_drop)
+		self.feature_map_drop = torch.nn.Dropout2d(self.p.feat_drop)
+		self.bn0 = torch.nn.BatchNorm2d(self.p.perm).to(self.device)
+		# self.conv1_bn = nn.BatchNorm2d(1)
+		# self.ent_embed = torch.nn.Embedding(self.p.num_ent,elf.p.embed_dim, padding_idx=None).to(self.device)
+		# xavier_normal_(self.ent_embed.weight)       #
+
+		# self.criter = nn.Softplus()
+		# self.use_name = "check"
+		#
 		self.rel_embed		= torch.nn.Embedding(self.p.num_rel*2, self.p.embed_dim, padding_idx=None).to(self.device); xavier_normal_(self.rel_embed.weight)
+		# self.register_parameter()
+		self.ent_embed      = nn.Parameter(self.get_pretrained_embed('./')).to(self.device)
+
 		self.bceloss		= torch.nn.BCELoss()
 		self.bprloss = BPRLoss()
 
 		self.way1_bceloss = BinaryCrossEntropyLoss(self.p)
-
-		self.inp_drop		= torch.nn.Dropout(self.p.inp_drop)
-		self.hidden_drop	= torch.nn.Dropout(self.p.hid_drop)
-		self.feature_map_drop	= torch.nn.Dropout2d(self.p.feat_drop)
-		self.bn0		= torch.nn.BatchNorm2d(self.p.perm).to(self.device)
 
 		flat_sz_h 		= self.p.k_h
 		flat_sz_w 		= 2*self.p.k_w
@@ -577,6 +586,18 @@ class InteractE(torch.nn.Module):
 		right_pad	= temp[..., :padding]
 		padded		= torch.cat([left_pad, temp, right_pad], dim=3)
 		return padded
+
+	def get_pretrained_embed(self, path):
+		res = []
+		with open(os.path.join(path, 'sen.vec'), 'r') as f:
+			for line in f.readlines():
+				line = line.strip()
+				line = line[1:-1]
+				line = line.replace("'", "").replace(" ", "").split(',')
+				line = list(map(float, line))
+				res.append(line)
+		res = torch.tensor(res)
+		return res
 
 
 	def forward(self, sub, rel, neg_ents, label=None, is_train:bool=True, all_triples=None, sr2o_all=None, so2r=None, strategy='one_to_x', step=None):
