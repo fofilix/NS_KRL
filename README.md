@@ -1,20 +1,8 @@
 # NS_KRL
 
-This repo is for our code about the project NS-KRL
+This repo is for our code about the project NS-KRL.
 
-## Useage
-Use the command:
-```
-python Main.py --gpu 0 --data WN18RR --name XXX --batch 256 --train_strategy one_to_n --feat_drop 0.2 --hid_drop 0.3 --perm 4 --ker_sz 11 --lr 0.0001 --model_loaded_path None --embed_dim 200 --k_h 20 --k_w 10 --need_n_neg 10
-```
-or use "CUDA_VISIBLE_DEVICES" like:
-```
-CUDA_VISIBLE_DEVICES=0 python Main.py --data WN18RR   --name XXX  --lr 0.00003 --batch 256 
-```
-
-then it will start to run：
-
-![](https://github.com/fofilix/NS_KRL/blob/main/pic/runningpic.png)
+More codes are coming...
 
 ## MIT License
 Copyright (c) 2023 fofilix
